@@ -1,0 +1,155 @@
+
+  factory card_detail.fromJson(Map<String, dynamic> jsonData) {
+    return card_detail(
+      card_name: jsonData['name'],
+      fornt_img_path: jsonData['front_img_'],
+      back_img_path: jsonData['back_img'],
+    );
+  }
+
+  static Map<String, dynamic> toMap(card_detail card) => {
+        'name': card.card_name,
+        'front_img': card.fornt_img_path,
+        'back_img': card.back_img_path,
+      };
+
+  static String encode(List<card_detail> card_list) => json.encode(
+        card_list
+            .map<Map<String, dynamic>>(
+              (card_list) => card_detail.toMap(card_list),
+            )
+            .toList(),
+      );
+  static List<card_detail> decode(String card_list) =>
+      (json.decode(card_list) as List<dynamic>)
+          .map<card_detail>(
+            (item) => card_detail.fromJson(item),
+          )
+          .toList();
+
+  void setList() async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setStringList('card_list', [card_detail.encode(card_list)]);
+  }
+
+  void getList() async {
+    final SharedPreferences prefs = await _prefs;
+    final List<String> card_list = prefs.getStringList('card_list') ?? [];
+    if (card_list.isEmpty) {
+      return;
+    } else {
+      Map<String, dynamic> card_map = json.decode(card_list[0]);
+      final card = card_detail.toMap(card_detail.fromJson(card_map));
+    }
+  }
+  // Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  // final String encodedData = card_detail.encode([]);
+
+  // static List<String>? getList() => _prefs.getStringList('card_list');
+
+  // getList() {
+  //   return prefs.then((SharedPreferences prefs) async {
+  //     final List<card_detail> card_list =
+  //         await card_detail.decode(prefs.getString('card_list') ?? encodedData);
+  //     return card_list;
+  //   });
+  // }
+
+  // static Future setList(List<card_detail> card_list) async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   final String encodedData = card_detail.encode(card_list);
+  //   prefs.setString('card_list', encodedData);
+  // }
+
+  // setList() {
+  //   return prefs.then((SharedPreferences prefs) async {
+  //     var card_list = await prefs.setString('card_list', encodedData);
+  //     return card_list;
+  //   });
+  // }
+
+
+getList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String> card_list = prefs.getStringList('card_list') ?? [];
+    if (card_list.isEmpty) {
+      return [];
+    } else {
+      Map<String, dynamic> card_map = json.decode(card_list[0]);
+      final card = card_detail.toMap(card_detail.fromJson(card_map));
+      // card_list[card_list.length] = card;
+    }
+  }
+
+
+
+@override
+  void initState() {
+    super.initState();
+    checkForList();
+  }
+
+  checkForList() async {
+    getList().then((value) {
+      if (value == null) {
+        card_list = [];
+      } else {
+        card_list = value
+            .map(
+              (e) => card_detail(
+                card_name: e['name'],
+                fornt_img_path: e['front_img'],
+                back_img_path: e['back_img'],
+              ),
+            )
+            .toList();
+      }
+      setState(() {
+        card_list = card_list;
+      });
+    });
+  }
+
+
+
+
+   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  final String encodedData = card_detail.encode([]);
+
+  setList(card_detail new_card) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String endodedData = jsonEncode(new_card);
+    prefs.setString('card_list', encodedData);
+  }
+
+  late List<card_detail> card_list = [];
+
+  set_card_list(card_detail new_card) async {
+    final SharedPreferences prefs = await _prefs;
+    final String card_list_json_list = jsonEncode(new_card);
+    final Future<bool> card_list_json =
+        prefs.setString("card_list", card_list_json_list);
+
+    card_list = card_list_json_list
+        .map((dynamic item) => card_detail(
+              card_name: item['card_name'],
+              fornt_img_path: item['fornt_img_path'],
+              back_img_path: item['back_img_path'],
+            ))
+        .toList();
+  }
+
+  get_card_list() async {
+    final SharedPreferences prefs = await _prefs;
+    final String? card_list_json = prefs.getString('card_list');
+    if (card_list_json != null) {
+      final List<dynamic> card_list_json_decoded = jsonDecode(card_list_json);
+      card_list = card_list_json_decoded.map((dynamic item) {
+        return card_detail(
+          card_name: item['card_name'],
+          fornt_img_path: item['fornt_img_path'],
+          back_img_path: item['back_img_path'],
+        );
+      }).toList();
+    }
+  }
