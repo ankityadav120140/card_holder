@@ -296,22 +296,44 @@ class _addCardState extends State<addCard> {
               Container(
                 child: ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      final card_detail new_card = card_detail(
-                        card_name: cardName.text.toUpperCase(),
-                        fornt_img_path: frontImgPath,
-                        back_img_path: backImgPath,
+                    if (cardName.text == '' || frontImgPath == '') {
+                      final snackBar = SnackBar(
+                        content: const Text(
+                          'Add atleast a card name and a photo',
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                        action: SnackBarAction(
+                          label: 'OK',
+                          onPressed: () {
+                            // Some code to undo the change.
+                          },
+                        ),
                       );
-                      addCard(new_card);
-                    });
-                    cardName.clear();
-                    setState(() {});
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => home(),
-                      ),
-                    );
+
+                      // Find the ScaffoldMessenger in the widget tree
+                      // and use it to show a SnackBar.
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      setState(() {
+                        final card_detail new_card = card_detail(
+                          card_name: cardName.text.toUpperCase(),
+                          fornt_img_path: frontImgPath,
+                          back_img_path: backImgPath,
+                          index: card_list.length,
+                        );
+                        addCard(new_card);
+                      });
+                      cardName.clear();
+                      setState(() {});
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => home(),
+                        ),
+                      );
+                    }
                   },
                   child: Text(
                     "Add Card",

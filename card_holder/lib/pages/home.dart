@@ -58,17 +58,38 @@ class _homeState extends State<home> {
       body: Container(
         padding: const EdgeInsets.only(top: 2.5),
         decoration: BoxDecoration(color: Color.fromARGB(255, 226, 228, 249)),
-        child: ListView(
-          children: card_list
-              .map(
-                (e) => individual_card(
-                  e.card_name,
-                  e.fornt_img_path,
-                  e.back_img_path,
+        child: card_list.isEmpty
+            ? Container()
+            : ListView.builder(
+                itemCount: card_list.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return individual_card(
+                    index,
+                    card_list[index].card_name,
+                    card_list[index].fornt_img_path,
+                    card_list[index].back_img_path,
+                  );
+                }
+                //   final item = card_list[index];
+                //   card_list.map(
+                //     (e) => individual_card(
+                //       e.index,
+                //       e.card_name,
+                //       e.fornt_img_path,
+                //       e.back_img_path,
+                //     ),
+                //   );
+                // },
+                // children: card_list
+                //     .map(
+                //       (e) => individual_card(
+                //         e.card_name,
+                //         e.fornt_img_path,
+                //         e.back_img_path,
+                //       ),
+                //     )
+                //     .toList(),
                 ),
-              )
-              .toList(),
-        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
